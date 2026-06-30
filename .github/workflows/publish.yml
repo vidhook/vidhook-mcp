@@ -1,0 +1,48 @@
+name: Publish
+
+# npm 公開を OIDC Trusted Publishing で行う（NPM_TOKEN を保存しない）。
+# - トリガ: `v*` タグの push（例 v0.1.1）、または手動。
+# 事前設定（npmjs.com・1 度だけ）: パッケージ vidhook-mcp の Settings → Trusted Publisher に
+#   GitHub repo = vidhook/vidhook-mcp / workflow = publish.yml を登録する。
+#   未登録だと OIDC トークンが照合されず publish が E404 で失敗する。
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  id-token: write # OIDC トークン発行（Trusted Publishing に必須）
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v4
+        with:
+          cache: true
+      - run: pnpm install --frozen-lockfile
+
+      # タグ起動時はタグ（vX.Y.Z）と package.json version の一致を強制する。
+      - name: Verify tag matches package version
+        if: github.ref_type == 'tag'
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::tag version ($TAG_VERSION) != package.json version ($PKG_VERSION)" >&2
+            exit 1
+          fi
+
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+      # OIDC Trusted Publishing: id-token があり NODE_AUTH_TOKEN を設定しなければ npm が
+      # 自動で OIDC 認証し provenance も付与する。NODE_AUTH_TOKEN は絶対に設定しない。
+      # workspace 依存が無いため pnpm pack を介さず npm publish を直接使える。
+      - name: Publish to npm (OIDC trusted publishing)
+        run: npm publish --access public

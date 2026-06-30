@@ -1,0 +1,64 @@
+{
+  "name": "vidhook-mcp",
+  "version": "0.1.1",
+  "description": "MCP server for vidhook — generate videos from JSON through the vidhook render API (validate, render, get_status).",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "vidhook",
+    "video",
+    "video-generation",
+    "rendering",
+    "json2video",
+    "remotion"
+  ],
+  "homepage": "https://github.com/vidhook/vidhook-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vidhook/vidhook-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vidhook/vidhook-mcp/issues"
+  },
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "vidhook-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "skill/SKILL.md",
+    "skill/reference",
+    "skill/examples",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run src skill",
+    "test:e2e": "vitest run e2e",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.1",
+    "@types/node": "^24.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.0"
+  }
+}

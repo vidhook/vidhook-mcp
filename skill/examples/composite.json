@@ -1,0 +1,72 @@
+{
+  "resolution": "full-hd",
+  "fps": 30,
+  "quality": "high",
+  "scenes": [
+    {
+      "duration": 3,
+      "background-color": "#101820",
+      "elements": [
+        {
+          "type": "video",
+          "src": "https://cdn.example.com/clips/intro.mp4",
+          "seek": 0,
+          "volume": 0,
+          "fit": "cover",
+          "fade-in": 0.3
+        },
+        {
+          "type": "text",
+          "text": "Scene One",
+          "start": 0.5,
+          "settings": {
+            "font-family": "Montserrat",
+            "font-size": 64,
+            "font-weight": 700,
+            "font-color": "#ffffff",
+            "background-color": "transparent",
+            "text-align": "center",
+            "vertical-position": "bottom"
+          }
+        }
+      ],
+      "transition": { "style": "wipeleft", "duration": 0.5 }
+    },
+    {
+      "duration": 3,
+      "background-color": "#202830",
+      "elements": [
+        {
+          "type": "image",
+          "src": "https://cdn.example.com/photos/landscape.jpg",
+          "fit": "cover",
+          "zoom": 8,
+          "pan": "right",
+          "pan-distance": 0.3,
+          "fade-in": 0.3
+        },
+        {
+          "type": "text",
+          "text": "Scene Two",
+          "start": 0.5,
+          "position": "top-center",
+          "settings": {
+            "font-family": "Montserrat",
+            "font-size": 64,
+            "font-weight": 700,
+            "font-color": "#ffee00"
+          }
+        }
+      ]
+    }
+  ],
+  "elements": [
+    {
+      "type": "audio",
+      "src": "https://cdn.example.com/audio/bgm.mp3",
+      "duration": -2,
+      "volume": 0.2,
+      "loop": -1
+    }
+  ]
+}

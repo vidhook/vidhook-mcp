@@ -1,0 +1,30 @@
+# vidhook-mcp 開発ツール定義。clone 後 `mise install` で Node / pnpm を再現する。
+# pnpm のバージョン管理は mise を唯一の管理元とする（vidhook 他リポと同じ規約）。
+
+[tools]
+node = "24"
+pnpm = "10"
+
+[tasks.setup]
+description = "依存関係をインストールする"
+run = "pnpm install"
+
+[tasks.lint]
+description = "Biome で lint/format チェック"
+run = "pnpm lint"
+
+[tasks.format]
+description = "Biome で format 適用"
+run = "pnpm format"
+
+[tasks.typecheck]
+description = "tsc 型チェック"
+run = "pnpm typecheck"
+
+[tasks.test]
+description = "unit テスト（src / skill）"
+run = "pnpm test"
+
+[tasks.build]
+description = "dist/index.js へバンドル（tsup）"
+run = "pnpm build"

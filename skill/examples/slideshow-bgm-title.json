@@ -1,0 +1,66 @@
+{
+  "resolution": "full-hd",
+  "fps": 30,
+  "quality": "high",
+  "scenes": [
+    {
+      "duration": 3,
+      "background-color": "#000000",
+      "elements": [
+        {
+          "type": "image",
+          "src": "https://cdn.example.com/photos/beach.jpg",
+          "fit": "cover"
+        }
+      ],
+      "transition": { "style": "fade", "duration": 0.5 }
+    },
+    {
+      "duration": 3,
+      "background-color": "#000000",
+      "elements": [
+        {
+          "type": "image",
+          "src": "https://cdn.example.com/photos/forest.jpg",
+          "fit": "cover"
+        }
+      ],
+      "transition": { "style": "fade", "duration": 0.5 }
+    },
+    {
+      "duration": 3,
+      "background-color": "#000000",
+      "elements": [
+        {
+          "type": "image",
+          "src": "https://cdn.example.com/photos/mountain.jpg",
+          "fit": "cover"
+        }
+      ]
+    }
+  ],
+  "elements": [
+    {
+      "type": "text",
+      "text": "Our Trip 2026",
+      "start": 0,
+      "duration": -2,
+      "settings": {
+        "font-family": "Montserrat",
+        "font-size": 72,
+        "font-weight": 700,
+        "font-color": "#ffffff",
+        "text-align": "center",
+        "vertical-position": "bottom",
+        "horizontal-position": "center"
+      }
+    },
+    {
+      "type": "audio",
+      "src": "https://cdn.example.com/audio/bgm.mp3",
+      "duration": -2,
+      "volume": 0.2,
+      "loop": -1
+    }
+  ]
+}

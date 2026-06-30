@@ -1,0 +1,64 @@
+{
+  "resolution": "hd",
+  "fps": 30,
+  "quality": "high",
+  "scenes": [
+    {
+      "duration": 2,
+      "background-color": "#101820",
+      "elements": [
+        {
+          "type": "image",
+          "src": "https://cdn.example.com/slides/01.jpg",
+          "fit": "cover"
+        }
+      ],
+      "transition": { "style": "wipeleft", "duration": 0.5 }
+    },
+    {
+      "duration": 2,
+      "background-color": "#101820",
+      "elements": [
+        {
+          "type": "image",
+          "src": "https://cdn.example.com/slides/02.jpg",
+          "fit": "cover"
+        }
+      ],
+      "transition": { "style": "circleopen", "duration": 0.75 }
+    },
+    {
+      "duration": -1,
+      "background-color": "#101820",
+      "elements": [
+        {
+          "type": "video",
+          "src": "https://cdn.example.com/clips/outro.mp4",
+          "duration": -1,
+          "fit": "contain",
+          "volume": 1
+        }
+      ],
+      "transition": { "style": "slideup", "duration": 0.5 }
+    },
+    {
+      "duration": 2,
+      "background-color": "#000000",
+      "elements": [
+        {
+          "type": "text",
+          "text": "The End",
+          "duration": -2,
+          "settings": {
+            "font-family": "Roboto",
+            "font-size": 64,
+            "font-weight": "bold",
+            "font-color": "#ffffff",
+            "text-align": "center",
+            "vertical-position": "center"
+          }
+        }
+      ]
+    }
+  ]
+}
