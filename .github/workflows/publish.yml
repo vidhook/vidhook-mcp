@@ -3,8 +3,11 @@ name: Publish
 # npm 公開を OIDC Trusted Publishing で行う（NPM_TOKEN を保存しない）。
 # - トリガ: `v*` タグの push（例 v0.1.1）、または手動。
 # 事前設定（npmjs.com・1 度だけ）: パッケージ vidhook-mcp の Settings → Trusted Publisher に
-#   GitHub repo = vidhook/vidhook-mcp / workflow = publish.yml を登録する。
-#   未登録だと OIDC トークンが照合されず publish が E404 で失敗する。
+#   GitHub repo = vidhook/vidhook-mcp / workflow = publish.yml（拡張子込み・完全一致）を登録する。
+#   未登録 or 不一致だと OIDC が照合されず ENEEDAUTH で失敗する。
+#
+# npm 公式の OIDC 手順に合わせ、ここだけ mise ではなく actions/setup-node + registry-url を使う
+# （registry を npm に明示しないと OIDC が起動せず ENEEDAUTH になるため）。node>=22.14・npm>=11.5.1 必須。
 on:
   push:
     tags:
@@ -20,9 +23,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: jdx/mise-action@v4
+      - uses: actions/setup-node@v6
         with:
-          cache: true
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+      # OIDC trusted publishing は npm >= 11.5.1 が必須（node 同梱版が古い場合に備え明示更新）。
+      - name: Ensure npm supports OIDC trusted publishing
+        run: |
+          npm install -g npm@latest
+          npm --version
+      - name: Enable pnpm
+        run: npm install -g pnpm@10
       - run: pnpm install --frozen-lockfile
 
       # タグ起動時はタグ（vX.Y.Z）と package.json version の一致を強制する。
