@@ -1,0 +1,14 @@
+{
+  "name": "vidhook",
+  "owner": {
+    "name": "vidhook"
+  },
+  "description": "Plugins for vidhook — render videos from JSON through the vidhook API.",
+  "plugins": [
+    {
+      "name": "vidhook",
+      "source": "./",
+      "description": "Render videos from JSON via the vidhook API. Bundles the vidhook MCP server (validate / render / get_status) and the vidhook-movie skill for authoring correct Movie JSON."
+    }
+  ]
+}

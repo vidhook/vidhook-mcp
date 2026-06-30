@@ -13,7 +13,7 @@
 
 vidhook.app のエージェント向け **MCP サーバ**（npm: `vidhook-mcp`）の OSS 公開リポジトリ。
 render API（`POST /renders/validate` / `POST /renders` / `GET /renders/{id}`）の薄い stdio ラッパで、
-`validate` / `render` / `get_status` の 3 ツールと、正しい Movie JSON を書くための Claude skill（`skill/`）を同梱する。
+`validate` / `render` / `get_status` の 3 ツールと、正しい Movie JSON を書くための Claude skill（`skills/vidhook-movie/`）を同梱する。配布は Claude Code プラグイン（`.claude-plugin/` ＝ plugin + marketplace）で skill と MCP 宣言を 1 回で入れる。
 
 - **スキーマの真実は vidhook API 側**（本リポは再定義しない）。examples の実スキーマ整合は
   `e2e/examples.e2e.test.ts` が実 API を叩いて検証する（`pnpm test:e2e`・要 `VIDHOOK_API_KEY`）。

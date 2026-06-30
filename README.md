@@ -21,17 +21,23 @@ generate assets. Compose or upload them on the agent side first.
 
 ## Skill: writing correct Movie JSON
 
-This package also ships a **Claude skill** under [`skill/`](./skill). The split is intentional:
+This repo also ships a **Claude skill** (`vidhook-movie`) under
+[`skills/vidhook-movie/`](./skills/vidhook-movie). The split is intentional:
 
 - **MCP server = hands** — it executes (`validate`, `render`, `get_status`) against the API.
 - **Skill = brain** — it teaches an agent how to author a correct Movie JSON in the first place.
 
-`skill/SKILL.md` carries the workflow (always `validate` first → draft with a `vh_test_` key →
-poll `get_status` → finalize with `vh_live_`), the key/environment axes, and the schema's hard
-spots. `skill/reference/schema-cheatsheet.md` is the full field-by-field reference, and
-`skill/examples/*.json` are complete, valid Movie definitions (slideshow + BGM + title, Ken Burns,
-transitions, and a composite of all four element types). Every example is checked against the API's
-`parseMovie` in CI (`skill/examples.test.ts`), so the skill cannot drift from the live schema.
+`skills/vidhook-movie/SKILL.md` carries the workflow (always `validate` first → draft with a
+`vh_test_` key → poll `get_status` → finalize with `vh_live_`), the key/environment axes, and the
+schema's hard spots. `skills/vidhook-movie/reference/schema-cheatsheet.md` is the full
+field-by-field reference, and `skills/vidhook-movie/examples/*.json` are complete, valid Movie
+definitions (slideshow + BGM + title, Ken Burns, transitions, and a composite of all four element
+types). Every example is checked against the API's `parseMovie` in CI
+(`skills/vidhook-movie/examples.test.ts`), so the skill cannot drift from the live schema.
+
+The skill is delivered through the [Claude Code plugin](#claude-code-recommended-skill--mcp-in-one)
+below, not through the npm package — Claude loads skills from plugins (or `~/.claude/skills/`), never
+from `node_modules`.
 
 ## Configuration
 
@@ -64,9 +70,30 @@ just point them at `npx -y vidhook-mcp` and set `VIDHOOK_API_KEY`. Requires **No
 Use a `vh_test_…` key while wiring things up (free, watermarked); swap in `vh_live_…` for clean
 output once it works.
 
-### Claude Code
+### Claude Code (recommended): skill + MCP in one
 
-Add the server with the CLI (`-e` sets the env var, everything after `--` is the launch command):
+Claude Code can install this repo as a **plugin**, which bundles both the `vidhook-movie` skill (the
+brain) and the MCP server declaration (the hands) in a single step. This is the only way Claude
+auto-loads the skill — it is not picked up from `node_modules`.
+
+```bash
+/plugin marketplace add https://github.com/vidhook/vidhook-mcp
+/plugin install vidhook@vidhook
+```
+
+The plugin declares the MCP server as `npx -y vidhook-mcp` and passes `VIDHOOK_API_KEY` through from
+your environment, so export it before launching Claude Code (or set it in your shell profile):
+
+```bash
+export VIDHOOK_API_KEY=vh_test_your_key_here
+```
+
+Verify with `/plugin` (skill listed) and `claude mcp list` (server `vidhook` registered).
+
+### Claude Code: MCP server only
+
+If you only want the tools (no skill), add the server directly with the CLI (`-e` sets the env var,
+everything after `--` is the launch command):
 
 ```bash
 claude mcp add vidhook -e VIDHOOK_API_KEY=vh_test_your_key_here -- npx -y vidhook-mcp
@@ -191,8 +218,8 @@ pnpm test             # unit (HTTP boundary stubbed) + skill example structure
 pnpm test:e2e         # validate every skill example against the live API (needs VIDHOOK_API_KEY)
 ```
 
-The `test:e2e` run is the schema drift-check: each `skill/examples/*.json` is sent to the live
-`/renders/validate`, so the examples cannot go stale against the real Movie schema.
+The `test:e2e` run is the schema drift-check: each `skills/vidhook-movie/examples/*.json` is sent to
+the live `/renders/validate`, so the examples cannot go stale against the real Movie schema.
 
 ## Local smoke test
 
