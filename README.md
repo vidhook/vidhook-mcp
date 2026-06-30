@@ -56,9 +56,108 @@ Watermarking and the target environment are **separate** and must not be confuse
 A `vh_test_` key against production still watermarks; the base URL only changes which environment you
 talk to, never whether the output is watermarked.
 
-## Registering with an MCP client
+## Installing in MCP clients
 
-Add to your MCP client config (example shape — keys vary by client):
+The server is published to npm and runs via `npx`, so most clients need no separate install step —
+just point them at `npx -y vidhook-mcp` and set `VIDHOOK_API_KEY`. Requires **Node.js ≥ 20**.
+
+Use a `vh_test_…` key while wiring things up (free, watermarked); swap in `vh_live_…` for clean
+output once it works.
+
+### Claude Code
+
+Add the server with the CLI (`-e` sets the env var, everything after `--` is the launch command):
+
+```bash
+claude mcp add vidhook -e VIDHOOK_API_KEY=vh_test_your_key_here -- npx -y vidhook-mcp
+```
+
+By default this is scoped to the current project. Add `--scope user` to make it available across all
+your projects, or `--scope project` to write a shared `.mcp.json` checked into version control.
+Verify with `claude mcp list`.
+
+### Claude Desktop
+
+Edit the config file (Settings → Developer → Edit Config), or open it directly:
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "vidhook": {
+      "command": "npx",
+      "args": ["-y", "vidhook-mcp"],
+      "env": {
+        "VIDHOOK_API_KEY": "vh_test_your_key_here"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop for the change to take effect.
+
+### Cursor
+
+Create `.cursor/mcp.json` in your project (or `~/.cursor/mcp.json` to enable it globally):
+
+```json
+{
+  "mcpServers": {
+    "vidhook": {
+      "command": "npx",
+      "args": ["-y", "vidhook-mcp"],
+      "env": {
+        "VIDHOOK_API_KEY": "vh_test_your_key_here"
+      }
+    }
+  }
+}
+```
+
+### VS Code (GitHub Copilot / agent mode)
+
+Create `.vscode/mcp.json` in your workspace — note the top-level key is `servers`, not `mcpServers`:
+
+```json
+{
+  "servers": {
+    "vidhook": {
+      "command": "npx",
+      "args": ["-y", "vidhook-mcp"],
+      "env": {
+        "VIDHOOK_API_KEY": "vh_test_your_key_here"
+      }
+    }
+  }
+}
+```
+
+Or add it from the command line: `code --add-mcp '{"name":"vidhook","command":"npx","args":["-y","vidhook-mcp"],"env":{"VIDHOOK_API_KEY":"vh_test_your_key_here"}}'`
+
+### Windsurf
+
+Edit `~/.codeium/windsurf/mcp_config.json` (Cascade → MCP settings → manage):
+
+```json
+{
+  "mcpServers": {
+    "vidhook": {
+      "command": "npx",
+      "args": ["-y", "vidhook-mcp"],
+      "env": {
+        "VIDHOOK_API_KEY": "vh_test_your_key_here"
+      }
+    }
+  }
+}
+```
+
+### Other clients
+
+Any MCP client that spawns a stdio server works. The common shape (keys vary by client) is:
 
 ```jsonc
 {
