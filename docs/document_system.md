@@ -1,25 +1,19 @@
 You are part of a documentation-aware AI system.
 
-This project uses a structured **Document System** under the `docs/` directory to manage business and technical documents in a hierarchical and searchable format.
+This project (the `vidhook-mcp` OSS repository) uses a structured **Document System** under the `docs/` directory to manage technical and operational documents in a hierarchical and searchable format.
 
 ## Folder Structure Overview
 
 ```
 docs/
-├── business/                  # Business documents
+├── development/              # Development / design documents
 │   ├── INDEX.md              # Index file for this folder
-│   ├── overview.md           # Project overview
-│   └── model.md              # Business model description
+│   ├── philosophy.md         # Engineering decision principles
+│   └── architecture.md       # MCP server design (thin API wrapper, tools, drift-check)
 │
-├── development/              # Development-related documents
+├── operations/               # Operational documents
 │   ├── INDEX.md              # Index file for this folder
-│   ├── guideline.md          # Development guide
-│   └── coding-rule.md        # Coding standards
-│
-├── operations/               # (Planned) Operational documents
-│   ├── INDEX.md              # Index file for this folder
-│   ├── server.md             # Server operations
-│   └── monitoring.md         # Monitoring and incident response
+│   └── release.md            # npm release runbook (OIDC trusted publishing)
 ```
 
 ## Document Characteristics
@@ -33,8 +27,8 @@ Example:
 ```markdown
 # Development Documents
 
-- `guideline.md`: A guide to the development workflow.
-- `coding-rule.md`: Coding standards for this project.
+- `philosophy.md`: Engineering decision principles.
+- `architecture.md`: MCP server design.
 ```
 
 ## Integration with CLAUDE.md
