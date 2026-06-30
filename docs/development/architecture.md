@@ -21,7 +21,7 @@ vidhook-mcp は **render API（`POST /renders/validate` / `POST /renders` / `GET
 
 skill と MCP は配布経路が異なる。Claude が skill をロードするのは `~/.claude/skills/`・`.claude/skills/`・**プラグインの `skills/<name>/SKILL.md`** のみで、`node_modules/vidhook-mcp/` は対象外。そこで本リポを **Claude Code プラグイン兼 marketplace** とし、1 プラグインに skill + MCP 宣言を同梱する（`/plugin marketplace add` → `/plugin install vidhook@vidhook` の 1 回で脳と手足が両方入る）。
 
-- `.claude-plugin/plugin.json`：プラグイン名 `vidhook`。`mcpServers` を**インライン宣言**（`vidhook` → `npx -y vidhook-mcp`・`VIDHOOK_API_KEY` は環境から `${VIDHOOK_API_KEY}` で素通し）。root `.mcp.json` は置かない（開発時にこのリポ自身へ誤登録するのを避けるため）。
+- `.claude-plugin/plugin.json`：プラグイン名 `vidhook`。`mcpServers` を**インライン宣言**（`vidhook` → `npx -y vidhook-mcp`）。API キーは `userConfig.api_key`（`sensitive`・`required`）で**有効化時に入力プロンプト**し、MCP の env へ `${user_config.api_key}` で渡す（マスク入力・keychain 保存、`settings.json` には書かない）。キー必須＝未入力では動かない性質のため、環境変数素通しではなく入力式を採る。root `.mcp.json` は置かない（開発時にこのリポ自身へ誤登録するのを避けるため）。
 - `.claude-plugin/marketplace.json`：このリポをカタログ化。plugin source はリポ root（`"./"`）＝同一リポを marketplace として使う。
 - **役割分担**：npm パッケージ（`vidhook-mcp`）は **MCP サーバ実体**の配布（`npx` で起動する `dist/`）。プラグインは **skill + MCP 宣言**。よって skill は npm の `files` から外し（`dist` / `README.md` / `LICENSE` のみ公開）、skill の単一ソースをこのリポの `skills/vidhook-movie/` に一本化する。
 

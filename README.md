@@ -81,12 +81,10 @@ auto-loads the skill — it is not picked up from `node_modules`.
 /plugin install vidhook@vidhook
 ```
 
-The plugin declares the MCP server as `npx -y vidhook-mcp` and passes `VIDHOOK_API_KEY` through from
-your environment, so export it before launching Claude Code (or set it in your shell profile):
-
-```bash
-export VIDHOOK_API_KEY=vh_test_your_key_here
-```
+The plugin declares the MCP server as `npx -y vidhook-mcp` and **prompts you for your vidhook API key
+when it's enabled** (masked input, stored in your system keychain — never written to
+`settings.json`). Use a `vh_test_…` key while iterating (free, watermarked); reconfigure with a
+`vh_live_…` key for clean output via `/plugin` → configure.
 
 Verify with `/plugin` (skill listed) and `claude mcp list` (server `vidhook` registered).
 
