@@ -8,12 +8,21 @@
     "name": "vidhook"
   },
   "keywords": ["vidhook", "video", "video-generation", "mcp", "render"],
+  "userConfig": {
+    "api_key": {
+      "type": "string",
+      "title": "vidhook API key",
+      "description": "Your vidhook API key. Use a vh_test_ key for free, watermarked drafts; vh_live_ for clean, billed output. Get one at https://vidhook.app",
+      "sensitive": true,
+      "required": true
+    }
+  },
   "mcpServers": {
     "vidhook": {
       "command": "npx",
       "args": ["-y", "vidhook-mcp"],
       "env": {
-        "VIDHOOK_API_KEY": "${VIDHOOK_API_KEY}"
+        "VIDHOOK_API_KEY": "${user_config.api_key}"
       }
     }
   }
