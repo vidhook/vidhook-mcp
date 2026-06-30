@@ -1,0 +1,35 @@
+{
+  "resolution": "full-hd",
+  "fps": 30,
+  "quality": "high",
+  "scenes": [
+    {
+      "duration": 5,
+      "background-color": "#000000",
+      "elements": [
+        {
+          "type": "image",
+          "src": "https://cdn.example.com/photos/cityscape.jpg",
+          "fit": "cover",
+          "zoom": 6,
+          "pan": "right",
+          "pan-distance": 0.2
+        }
+      ]
+    },
+    {
+      "duration": 5,
+      "background-color": "#000000",
+      "elements": [
+        {
+          "type": "image",
+          "src": "https://cdn.example.com/photos/portrait.jpg",
+          "fit": "cover",
+          "zoom": -4,
+          "pan": "top-left",
+          "pan-distance": 0.1
+        }
+      ]
+    }
+  ]
+}
