@@ -61,6 +61,18 @@ Full field-by-field reference (every field, default, and constraint, plus the 58
 and resolution dimensions): **`reference/schema-cheatsheet.md`**. Read it when you need exact ranges
 or are unsure whether a field exists.
 
+### Authoritative, always-current schema
+
+`reference/schema-cheatsheet.md` is a **local snapshot that can lag the API**. The schema truth lives
+in the vidhook API, published as machine-readable docs:
+
+- **<https://docs.vidhook.app/llms.txt>** — docs index; start here.
+- **<https://docs.vidhook.app/llms-full.txt>** — full docs inlined for one-shot reading.
+
+Fetch these when the cheatsheet lacks a field, when a field has no effect (it may have been
+renamed/removed), or when `validate` returns an error you can't explain. When the live docs and this
+skill's snapshot disagree, **trust the live docs**.
+
 ## Patterns (with runnable examples)
 
 Each example in `examples/` is a complete, valid Movie JSON (it passes `validate`). Read the one
