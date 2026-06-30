@@ -15,7 +15,15 @@ vidhook-mcp は **render API（`POST /renders/validate` / `POST /renders` / `GET
 配布は 2 つで役割が異なる:
 
 - **MCP サーバ（手足）**：`validate` / `render` / `get_status` を API に対して実行する。
-- **Claude skill（脳・`skill/`）**：エージェントに**正しい Movie JSON を書かせる知識**。`SKILL.md`（ワークフロー・キー/環境 2 軸・スキーマ難所）＋ `reference/schema-cheatsheet.md`（全フィールド早見表）＋ `examples/*.json`（代表 4 パターン）。
+- **Claude skill（脳・`skills/vidhook-movie/`）**：エージェントに**正しい Movie JSON を書かせる知識**。`SKILL.md`（ワークフロー・キー/環境 2 軸・スキーマ難所）＋ `reference/schema-cheatsheet.md`（全フィールド早見表）＋ `examples/*.json`（代表 4 パターン）。
+
+## 配布：plugin + marketplace（skill と MCP を 1 回で）
+
+skill と MCP は配布経路が異なる。Claude が skill をロードするのは `~/.claude/skills/`・`.claude/skills/`・**プラグインの `skills/<name>/SKILL.md`** のみで、`node_modules/vidhook-mcp/` は対象外。そこで本リポを **Claude Code プラグイン兼 marketplace** とし、1 プラグインに skill + MCP 宣言を同梱する（`/plugin marketplace add` → `/plugin install vidhook@vidhook` の 1 回で脳と手足が両方入る）。
+
+- `.claude-plugin/plugin.json`：プラグイン名 `vidhook`。`mcpServers` を**インライン宣言**（`vidhook` → `npx -y vidhook-mcp`・`VIDHOOK_API_KEY` は環境から `${VIDHOOK_API_KEY}` で素通し）。root `.mcp.json` は置かない（開発時にこのリポ自身へ誤登録するのを避けるため）。
+- `.claude-plugin/marketplace.json`：このリポをカタログ化。plugin source はリポ root（`"./"`）＝同一リポを marketplace として使う。
+- **役割分担**：npm パッケージ（`vidhook-mcp`）は **MCP サーバ実体**の配布（`npx` で起動する `dist/`）。プラグインは **skill + MCP 宣言**。よって skill は npm の `files` から外し（`dist` / `README.md` / `LICENSE` のみ公開）、skill の単一ソースをこのリポの `skills/vidhook-movie/` に一本化する。
 
 ## 3 ツール
 
@@ -45,7 +53,7 @@ API キーを**ツール引数で受け取る経路は持たない**（`src/conf
 
 skill 同梱の `examples/*.json` が陳腐化しないことを 2 層で守る:
 
-- **構造ゲート（unit・`skill/examples.test.ts`・依存ゼロ・常時 CI）**：生 JSON だけで確認できる不変条件（`src`=http(s) / 色=hex|transparent / `fps`∈{24,25,30}）。
+- **構造ゲート（unit・`skills/vidhook-movie/examples.test.ts`・依存ゼロ・常時 CI）**：生 JSON だけで確認できる不変条件（`src`=http(s) / 色=hex|transparent / `fps`∈{24,25,30}）。
 - **実スキーマ整合（e2e・`e2e/examples.e2e.test.ts`・要 `VIDHOOK_API_KEY`）**：各 example を**実 `POST /renders/validate`** に投げ、エラーなく見積りが返ることを検証する。**コピーしたスキーマではなく live API（= 真の SSoT）に追従**するため、API のスキーマ変更に自動で追従できる。public リポの CI では fork PR に secrets が渡らないため、内部 push / 手元実行時のみ走る。
 
 > この設計により、本リポは vidhook の内部実装を一切持たずに「skill の正しさ」を担保できる。スキーマを写経して二重管理する誘惑（drift の温床）を避けている（[philosophy](./philosophy.md) の DRY / 外部境界の検証）。

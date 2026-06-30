@@ -1,0 +1,20 @@
+{
+  "name": "vidhook",
+  "description": "Render videos from JSON via the vidhook API. Bundles the vidhook MCP server (validate / render / get_status) and the vidhook-movie skill for authoring correct Movie JSON.",
+  "homepage": "https://github.com/vidhook/vidhook-mcp#readme",
+  "repository": "https://github.com/vidhook/vidhook-mcp",
+  "license": "MIT",
+  "author": {
+    "name": "vidhook"
+  },
+  "keywords": ["vidhook", "video", "video-generation", "mcp", "render"],
+  "mcpServers": {
+    "vidhook": {
+      "command": "npx",
+      "args": ["-y", "vidhook-mcp"],
+      "env": {
+        "VIDHOOK_API_KEY": "${VIDHOOK_API_KEY}"
+      }
+    }
+  }
+}

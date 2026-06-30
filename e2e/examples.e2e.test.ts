@@ -18,7 +18,13 @@ import { loadConfig } from '../src/config.js';
 // public リポの CI では fork PR に secrets が渡らないため、内部 push 時のみ実行される。
 // =============================================================================
 
-const EXAMPLES_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'skill', 'examples');
+const EXAMPLES_DIR = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '..',
+  'skills',
+  'vidhook-movie',
+  'examples',
+);
 const exampleFiles = readdirSync(EXAMPLES_DIR).filter((name) => name.endsWith('.json'));
 
 const hasKey = Boolean(process.env.VIDHOOK_API_KEY?.trim());
