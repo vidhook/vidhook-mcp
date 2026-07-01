@@ -59,8 +59,10 @@ jobs:
       # `//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}` を書き、NODE_AUTH_TOKEN に
       # placeholder 値を入れる。npm 11.18 以降は「トークンが存在するなら OIDC を試みずトークン認証」
       # に挙動が変わったため、この placeholder トークンで publish が 403 になる（OIDC が発火しない）。
-      # publish 直前にこのトークン行を削除し、OIDC trusted publishing を確実に発火させる（registry 設定は残す）。
+      # userconfig .npmrc を registry 指定のみで上書きし _authToken 行を完全に排除、さらに
+      # NODE_AUTH_TOKEN を unset して OIDC trusted publishing を確実に発火させる。
       - name: Publish to npm (OIDC trusted publishing)
         run: |
-          npm config delete //registry.npmjs.org/:_authToken || true
+          printf 'registry=https://registry.npmjs.org/\n' > "$NPM_CONFIG_USERCONFIG"
+          unset NODE_AUTH_TOKEN
           npm publish --access public
