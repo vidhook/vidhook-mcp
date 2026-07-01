@@ -80,7 +80,17 @@ Use `custom` + `width`/`height` only for sizes outside this list.
 | `pan` | 8-direction enum | — | `left`, `top`, `right`, `bottom`, `top-left`, `top-right`, `bottom-left`, `bottom-right`. Omit for no pan. |
 | `pan-distance` | number 0.01..0.5 | `0.1` | Pan travel as a fraction. |
 
-`zoom` and `pan` are independent — combine them for a zoom-while-panning Ken Burns effect.
+`zoom` and `pan` combine into a zoom-while-panning Ken Burns effect — but mind
+the **black-border rule** (with the default `fit: cover`):
+
+- At `zoom: 0` the image fills the frame exactly. Any `pan` then moves part of the
+  frame off the image edge → black borders. To pan safely, use **positive zoom**
+  whose margin exceeds the pan travel.
+- The zoom-per-unit is small, so keep `pan-distance` modest. **Verified safe:
+  `zoom: 10` with `pan-distance ≤ 0.06`.** (`pan-distance: 0.2` shows borders even
+  at `zoom: 6`.)
+- **Negative zoom (zoom-out) with `fit: cover` always ends below cover → borders.**
+  Don't combine negative `zoom` with `pan`.
 
 ### `text`
 
@@ -101,6 +111,11 @@ Use `custom` + `width`/`height` only for sizes outside this list.
 | `text-align` | `left`/`center`/`right` | Horizontal text alignment within the box. |
 | `vertical-position` | `top`/`center`/`bottom` | Where the text sits inside the element box. |
 | `horizontal-position` | `left`/`center`/`right` | Where the text sits inside the element box. |
+
+A text element's box fills the whole frame, so position text with `vertical-position`
++ `horizontal-position` **inside `settings`** (defaults to center). The element-level
+`position` / `x` / `y` fields do **not** move text — a top-level `position` on a text
+element is ignored.
 
 ### `audio`
 
