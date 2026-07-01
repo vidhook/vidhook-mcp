@@ -45,6 +45,27 @@ export interface RenderProgress {
   errors: unknown[];
 }
 
+// GET /usage の recentActivity 1 件（openapi.ts RenderActivityEntry）。
+// finalizedAt は settle/release 済みのみ付く（processing 中は欠落）。
+export interface RenderActivityEntry {
+  id: string;
+  credits: number;
+  bucket: 'paid' | 'free';
+  status: 'processing' | 'succeeded' | 'failed';
+  createdAt: string;
+  finalizedAt?: string;
+}
+
+// GET /usage レスポンス（openapi.ts UsageResponse）。残高 + 直近レンダー活動（新しい順）。
+export interface UsageResponse {
+  balance: {
+    paidAvailable: number;
+    freeAvailable: number;
+    reserved: number;
+  };
+  recentActivity: RenderActivityEntry[];
+}
+
 // 非 2xx を正規化したエラー。status と API が返した本文（error/detail）を保持する。
 // 機微情報（API キー等）は一切含めない（V5）。category はエージェント向けの粗い分類。
 export type ApiErrorCategory =
@@ -104,6 +125,7 @@ export interface RenderApiClient {
   validate(body: RenderRequestBody): Promise<RenderValidationResult>;
   render(body: RenderRequestBody): Promise<RenderAccepted>;
   getStatus(renderId: string, bucketName: string): Promise<RenderProgress>;
+  getUsage(): Promise<UsageResponse>;
 }
 
 export const createClient = (options: ClientOptions): RenderApiClient => {
@@ -138,6 +160,7 @@ export const createClient = (options: ClientOptions): RenderApiClient => {
         'GET',
         `/renders/${encodeURIComponent(renderId)}?bucketName=${encodeURIComponent(bucketName)}`,
       ),
+    getUsage: () => request<UsageResponse>('GET', '/usage'),
   };
 };
 

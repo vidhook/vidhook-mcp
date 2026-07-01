@@ -15,6 +15,7 @@ process and communicates over stdin/stdout via JSON-RPC.
 | `validate` | Validate a Movie definition and estimate its credit cost. Starts no render and consumes no credits. `estimatedCredits` equals the credits `render` would reserve for the same body. |
 | `render` | Start an asynchronous render. Reserves credits and returns `renderId`, `bucketName`, `reservedCredits`. |
 | `get_status` | Poll a render's progress with `renderId` + `bucketName`. When `done` and not `fatalErrorEncountered`, `outputFile` holds the result video URL. |
+| `get_usage` | Return the current credit balance (`paidAvailable`, `freeAvailable`, `reserved`) and recent render activity (newest first). Takes no arguments. |
 
 All asset references in the Movie (`video`/`image`/`audio` `src`) must be **URLs** — vidhook does not
 generate assets. Compose or upload them on the agent side first.

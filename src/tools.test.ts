@@ -26,6 +26,12 @@ const makeStubClient = (impl: Partial<RenderApiClient>): RenderApiClient => ({
       fatalErrorEncountered: false,
       errors: [],
     })),
+  getUsage:
+    impl.getUsage ??
+    (async () => ({
+      balance: { paidAvailable: 0, freeAvailable: 0, reserved: 0 },
+      recentActivity: [],
+    })),
 });
 
 const connect = async (client: RenderApiClient) => {
@@ -52,12 +58,12 @@ describe('registerTools (full MCP list/call path, V1)', () => {
     await server?.close();
   });
 
-  it('lists exactly the three tools with no API-key input field (V5)', async () => {
+  it('lists exactly the four tools with no API-key input field (V5)', async () => {
     ({ server, mcpClient } = await connect(makeStubClient({})));
 
     const { tools } = await mcpClient.listTools();
     const names = tools.map((t) => t.name).sort();
-    expect(names).toEqual(['get_status', 'render', 'validate']);
+    expect(names).toEqual(['get_status', 'get_usage', 'render', 'validate']);
 
     // どのツールの inputSchema にも API キー項目が無いこと（V5）。
     for (const tool of tools) {
@@ -139,6 +145,31 @@ describe('registerTools (full MCP list/call path, V1)', () => {
       outputFile: 'https://out/video.mp4',
     });
     expect((result.content as { text: string }[])[0]?.text).toContain('done');
+  });
+
+  it('get_usage returns balance + recentActivity as text + structuredContent', async () => {
+    const usage = {
+      balance: { paidAvailable: 1200, freeAvailable: 180, reserved: 5 },
+      recentActivity: [
+        {
+          id: '01J',
+          credits: 5,
+          bucket: 'paid' as const,
+          status: 'succeeded' as const,
+          createdAt: '2026-06-30T10:00:00.000Z',
+          finalizedAt: '2026-06-30T10:01:30.000Z',
+        },
+      ],
+    };
+    ({ server, mcpClient } = await connect(makeStubClient({ getUsage: async () => usage })));
+
+    const result = await mcpClient.callTool({ name: 'get_usage', arguments: {} });
+
+    expect(result.isError).toBeFalsy();
+    expect(result.structuredContent).toEqual(usage);
+    const text = (result.content as { text: string }[])[0]?.text ?? '';
+    expect(text).toContain('paidAvailable=1200');
+    expect(text).toContain('1 entries');
   });
 
   it.each([

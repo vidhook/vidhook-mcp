@@ -66,6 +66,31 @@ describe('createClient request building (external boundary = fetch stub)', () =>
     );
     expect(calls[0]?.init.method).toBe('GET');
   });
+
+  it('sends Authorization: Bearer to GET /usage and returns the parsed body', async () => {
+    const usage = {
+      balance: { paidAvailable: 1200, freeAvailable: 180, reserved: 5 },
+      recentActivity: [
+        {
+          id: '01J',
+          credits: 5,
+          bucket: 'paid',
+          status: 'succeeded',
+          createdAt: '2026-06-30T10:00:00.000Z',
+          finalizedAt: '2026-06-30T10:01:30.000Z',
+        },
+      ],
+    };
+    const { fn, calls } = stubFetch(200, usage);
+    const client = createClient({ apiKey, baseUrl, fetch: fn });
+
+    expect(await client.getUsage()).toEqual(usage);
+    expect(calls[0]?.url).toBe('https://api.example/usage');
+    expect(calls[0]?.init.method).toBe('GET');
+    expect((calls[0]?.init.headers as Record<string, string>).authorization).toBe(
+      `Bearer ${apiKey}`,
+    );
+  });
 });
 
 describe('ApiError normalization', () => {
