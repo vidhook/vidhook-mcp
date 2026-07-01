@@ -1,6 +1,6 @@
 {
   "name": "vidhook",
-  "description": "Render videos from JSON via the vidhook API. Bundles the vidhook MCP server (validate / render / get_status) and the vidhook-movie skill for authoring correct Movie JSON.",
+  "description": "Render videos from JSON via the vidhook API. Bundles the vidhook MCP server (validate / render / get_status / get_usage) and the vidhook-movie skill for authoring correct Movie JSON.",
   "homepage": "https://github.com/vidhook/vidhook-mcp#readme",
   "repository": "https://github.com/vidhook/vidhook-mcp",
   "license": "MIT",

@@ -25,7 +25,7 @@ generate assets. Compose or upload them on the agent side first.
 This repo also ships a **Claude skill** (`vidhook-movie`) under
 [`skills/vidhook-movie/`](./skills/vidhook-movie). The split is intentional:
 
-- **MCP server = hands** — it executes (`validate`, `render`, `get_status`) against the API.
+- **MCP server = hands** — it executes (`validate`, `render`, `get_status`, `get_usage`) against the API.
 - **Skill = brain** — it teaches an agent how to author a correct Movie JSON in the first place.
 
 `skills/vidhook-movie/SKILL.md` carries the workflow (always `validate` first → draft with a
@@ -222,7 +222,7 @@ the live `/renders/validate`, so the examples cannot go stale against the real M
 
 ## Local smoke test
 
-`e2e/smoke.ts` runs `validate → render → get_status` once against a real API to leave an
+`e2e/smoke.ts` runs `validate → render → get_status → get_usage` once against a real API to leave an
 end-to-end trace:
 
 ```bash

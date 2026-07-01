@@ -1,6 +1,6 @@
 {
   "name": "vidhook-mcp",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "MCP server for vidhook — generate videos from JSON through the vidhook render API (validate, render, get_status).",
   "keywords": [
     "mcp",
