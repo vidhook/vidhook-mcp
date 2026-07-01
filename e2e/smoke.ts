@@ -1,7 +1,7 @@
 // =============================================================================
 // e2e 疎通スクリプト（#171・V2/V1 証跡用・手動実行）。
 //
-// 実 render API（ローカル / staging）へ 3 ツール経路（validate → render → get_status）を 1 度叩き、
+// 実 render API（ローカル / staging）へ 4 ツール経路（validate → render → get_status → get_usage）を 1 度叩き、
 // リクエスト/レスポンスを記録する。完全モックの単体テストだけで「完了」としないための実環境証跡
 // （philosophy: 外部境界の正しさはモックで担保しない）。
 //
@@ -52,6 +52,10 @@ const main = async (): Promise<void> => {
   // 3) get_status（進捗ポーリングを 1 度）。
   const status = await client.getStatus(accepted.renderId, accepted.bucketName);
   log('get_status', status);
+
+  // 4) get_usage（残高 + 直近レンダー活動を 1 度）。
+  const usage = await client.getUsage();
+  log('get_usage', usage);
 
   // V4: validate の見積りが render の予約額と一致する。
   console.log(

@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { ApiError, type RenderApiClient, type RenderRequestBody } from './client.js';
 
 // =============================================================================
-// MCP の 3 ツール（#171）。validate / render / get_status を render API の薄いラッパとして登録する。
+// MCP の 4 ツール。validate / render / get_status / get_usage を render API の薄いラッパとして登録する。
 //
 // 設計方針:
 //   - MCP は検証も見積りもせず、render API へ素通しする（検証/見積りの真実の源は API 側）。
@@ -94,7 +94,7 @@ const KEY_AND_ENV_NOTE =
   '(never a tool argument): vh_test_… renders a free/watermarked draft, vh_live_… renders clean/paid. ' +
   'The target environment is selected independently by VIDHOOK_API_BASE_URL (base URL), not by the key type.';
 
-// 3 ツールを McpServer へ登録する。client は外部境界（HTTP）の唯一の依存として注入する。
+// 4 ツールを McpServer へ登録する。client は外部境界（HTTP）の唯一の依存として注入する。
 export const registerTools = (server: McpServer, client: RenderApiClient): void => {
   server.registerTool(
     'validate',
@@ -171,6 +171,32 @@ export const registerTools = (server: McpServer, client: RenderApiClient): void 
             : `Render ${renderId} done. outputFile=${result.outputFile ?? 'unavailable'}.`
           : `Render ${renderId} in progress (${progressPct}).`;
         return ok(summary, { ...result });
+      } catch (err) {
+        return toErrorResult(err);
+      }
+    },
+  );
+
+  server.registerTool(
+    'get_usage',
+    {
+      title: 'Get credit balance and recent render activity',
+      description:
+        'Return the current credit balance (paidAvailable, freeAvailable, reserved) and recent ' +
+        'render activity (newest first: reservationKey id, credits, bucket, status, createdAt, and ' +
+        'finalizedAt once settled). Takes no arguments. Use this to check remaining credits or ' +
+        `review recent renders before starting a new one. ${KEY_AND_ENV_NOTE}`,
+      inputSchema: {},
+    },
+    async () => {
+      try {
+        const result = await client.getUsage();
+        const { paidAvailable, freeAvailable, reserved } = result.balance;
+        return ok(
+          `Balance: paidAvailable=${paidAvailable}, freeAvailable=${freeAvailable}, ` +
+            `reserved=${reserved}. recentActivity: ${result.recentActivity.length} entries.`,
+          { ...result },
+        );
       } catch (err) {
         return toErrorResult(err);
       }
