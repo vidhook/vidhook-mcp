@@ -66,10 +66,9 @@ talk to, never whether the output is watermarked.
 ## Installing in MCP clients
 
 The server is published to npm and runs via `npx`, so most clients need no separate install step —
-just point them at `npx -y vidhook-mcp` and set `VIDHOOK_API_KEY`. Requires **Node.js ≥ 20**.
-
-Use a `vh_test_…` key while wiring things up (free, watermarked); swap in `vh_live_…` for clean
-output once it works.
+just point them at `npx -y vidhook-mcp` and set `VIDHOOK_API_KEY`. Requires **Node.js ≥ 20**. Use a
+`vh_test_…` key while wiring things up (free, watermarked); swap in `vh_live_…` for clean output once
+it works.
 
 ### Claude Code (recommended): skill + MCP in one
 
@@ -82,32 +81,23 @@ auto-loads the skill — it is not picked up from `node_modules`.
 /plugin install vidhook@vidhook
 ```
 
-The plugin declares the MCP server as `npx -y vidhook-mcp` and **prompts you for your vidhook API key
-when it's enabled** (masked input, stored in your system keychain — never written to
-`settings.json`). Use a `vh_test_…` key while iterating (free, watermarked); reconfigure with a
-`vh_live_…` key for clean output via `/plugin` → configure.
+The plugin prompts you for your vidhook API key when it's enabled (masked input, stored in your
+system keychain — never written to `settings.json`). Verify with `/plugin` (skill listed) and
+`claude mcp list` (server `vidhook` registered).
 
-Verify with `/plugin` (skill listed) and `claude mcp list` (server `vidhook` registered).
-
-### Claude Code: MCP server only
-
-If you only want the tools (no skill), add the server directly with the CLI (`-e` sets the env var,
-everything after `--` is the launch command):
+To add just the tools (no skill) from the CLI instead:
 
 ```bash
 claude mcp add vidhook -e VIDHOOK_API_KEY=vh_test_your_key_here -- npx -y vidhook-mcp
 ```
 
-By default this is scoped to the current project. Add `--scope user` to make it available across all
-your projects, or `--scope project` to write a shared `.mcp.json` checked into version control.
-Verify with `claude mcp list`.
+(`-e` sets the env var, everything after `--` is the launch command.) Scoped to the current project
+by default; add `--scope user` for all projects, or `--scope project` for a shared `.mcp.json`.
 
-### Claude Desktop
+### Other MCP clients
 
-Edit the config file (Settings → Developer → Edit Config), or open it directly:
-
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+Most clients use the same `mcpServers` shape. Add this entry to the client's MCP config file, then
+restart the client:
 
 ```json
 {
@@ -115,94 +105,30 @@ Edit the config file (Settings → Developer → Edit Config), or open it direct
     "vidhook": {
       "command": "npx",
       "args": ["-y", "vidhook-mcp"],
-      "env": {
-        "VIDHOOK_API_KEY": "vh_test_your_key_here"
-      }
+      "env": { "VIDHOOK_API_KEY": "vh_test_your_key_here" }
     }
   }
 }
 ```
 
-Restart Claude Desktop for the change to take effect.
+The config file location differs per client:
 
-### Cursor
+| Client | Config file | Notes |
+| --- | --- | --- |
+| Claude Desktop | `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) · `%APPDATA%\Claude\claude_desktop_config.json` (Windows) | Settings → Developer → Edit Config |
+| Cursor | `.cursor/mcp.json` (project) · `~/.cursor/mcp.json` (global) | |
+| Windsurf | `~/.codeium/windsurf/mcp_config.json` | Cascade → MCP settings → manage |
+| VS Code (Copilot) | `.vscode/mcp.json` (workspace) | Top-level key is **`servers`**, not `mcpServers` |
 
-Create `.cursor/mcp.json` in your project (or `~/.cursor/mcp.json` to enable it globally):
-
-```json
-{
-  "mcpServers": {
-    "vidhook": {
-      "command": "npx",
-      "args": ["-y", "vidhook-mcp"],
-      "env": {
-        "VIDHOOK_API_KEY": "vh_test_your_key_here"
-      }
-    }
-  }
-}
-```
-
-### VS Code (GitHub Copilot / agent mode)
-
-Create `.vscode/mcp.json` in your workspace — note the top-level key is `servers`, not `mcpServers`:
-
-```json
-{
-  "servers": {
-    "vidhook": {
-      "command": "npx",
-      "args": ["-y", "vidhook-mcp"],
-      "env": {
-        "VIDHOOK_API_KEY": "vh_test_your_key_here"
-      }
-    }
-  }
-}
-```
-
-Or add it from the command line: `code --add-mcp '{"name":"vidhook","command":"npx","args":["-y","vidhook-mcp"],"env":{"VIDHOOK_API_KEY":"vh_test_your_key_here"}}'`
-
-### Windsurf
-
-Edit `~/.codeium/windsurf/mcp_config.json` (Cascade → MCP settings → manage):
-
-```json
-{
-  "mcpServers": {
-    "vidhook": {
-      "command": "npx",
-      "args": ["-y", "vidhook-mcp"],
-      "env": {
-        "VIDHOOK_API_KEY": "vh_test_your_key_here"
-      }
-    }
-  }
-}
-```
-
-### Other clients
-
-Any MCP client that spawns a stdio server works. The common shape (keys vary by client) is:
-
-```jsonc
-{
-  "mcpServers": {
-    "vidhook": {
-      "command": "npx",
-      "args": ["-y", "vidhook-mcp"],
-      "env": {
-        "VIDHOOK_API_KEY": "vh_test_your_key_here"
-      }
-    }
-  }
-}
-```
+VS Code can also add it from the command line:
+`code --add-mcp '{"name":"vidhook","command":"npx","args":["-y","vidhook-mcp"],"env":{"VIDHOOK_API_KEY":"vh_test_your_key_here"}}'`
 
 `npx -y vidhook-mcp` fetches and runs the published package. If you install it globally
-(`npm i -g vidhook-mcp`), you can instead set `"command": "vidhook-mcp"` with no `args`.
+(`npm i -g vidhook-mcp`), set `"command": "vidhook-mcp"` with no `args` instead.
 
-For local development, clone this repo and run the server directly from source:
+### Local development
+
+Clone this repo and run the server directly from source:
 
 ```bash
 mise run setup        # install deps (or: pnpm install)
