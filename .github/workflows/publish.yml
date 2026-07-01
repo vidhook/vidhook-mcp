@@ -52,8 +52,15 @@ jobs:
       - run: pnpm test
       - run: pnpm build
 
-      # OIDC Trusted Publishing: id-token があり NODE_AUTH_TOKEN を設定しなければ npm が
-      # 自動で OIDC 認証し provenance も付与する。NODE_AUTH_TOKEN は絶対に設定しない。
-      # workspace 依存が無いため pnpm pack を介さず npm publish を直接使える。
+      # OIDC Trusted Publishing: id-token があり .npmrc に認証トークンが無ければ npm が
+      # 自動で OIDC 認証し provenance も付与する。workspace 依存が無いため npm publish を直接使える。
+      #
+      # 注意（npm >= 11.18）: setup-node は registry-url 指定時に userconfig の .npmrc へ
+      # `//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}` を書き、NODE_AUTH_TOKEN に
+      # placeholder 値を入れる。npm 11.18 以降は「トークンが存在するなら OIDC を試みずトークン認証」
+      # に挙動が変わったため、この placeholder トークンで publish が 403 になる（OIDC が発火しない）。
+      # publish 直前にこのトークン行を削除し、OIDC trusted publishing を確実に発火させる（registry 設定は残す）。
       - name: Publish to npm (OIDC trusted publishing)
-        run: npm publish --access public
+        run: |
+          npm config delete //registry.npmjs.org/:_authToken || true
+          npm publish --access public

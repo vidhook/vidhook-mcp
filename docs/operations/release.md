@@ -55,4 +55,5 @@ npm view vidhook-mcp dist.attestations   # provenance が付いていること
 |---|---|
 | `npm error code ENEEDAUTH` | OIDC が起動していない。`registry-url` 未設定 / npm < 11.5.1 / `id-token: write` 欠落を確認。 |
 | `npm error 404 ... do not have permission` | OIDC は起動したが **Trusted Publisher 設定が不一致**。上表（特に Organization=`vidhook`・workflow=`publish.yml`・Environment 空欄）を再確認。 |
+| `npm error code E403 ... PUT /vidhook-mcp`（provenance 署名は成功するのに PUT だけ 403） | **OIDC が発火せずトークン認証にフォールバックしている**。`setup-node` が userconfig `.npmrc` に書く `//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}`（placeholder 値）が原因。**npm >= 11.18 は「トークンが存在するなら OIDC を試みない」挙動**に変わった（空文字も「値あり」扱いで NG・完全に行が無い状態が必要）。`publish.yml` は publish 直前に `npm config delete //registry.npmjs.org/:_authToken` でこの行を削除して回避している。0.1.1（npm がより古い時期）で成功していたのが、`npm install -g npm@latest` のバージョン更新で顕在化したリグレッション。 |
 | `bin script name ... was invalid and removed` | `bin` 値の正規化警告。`package.json` の `bin` を `dist/index.js`（先頭 `./` なし）にすれば出ない。 |
