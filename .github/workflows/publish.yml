@@ -55,12 +55,11 @@ jobs:
       # OIDC Trusted Publishing: id-token があり .npmrc に認証トークンが無ければ npm が
       # 自動で OIDC 認証し provenance も付与する。workspace 依存が無いため npm publish を直接使える。
       #
-      # 注意（npm >= 11.18）: setup-node は registry-url 指定時に userconfig の .npmrc へ
-      # `//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}` を書き、NODE_AUTH_TOKEN に
-      # placeholder 値を入れる。npm 11.18 以降は「トークンが存在するなら OIDC を試みずトークン認証」
-      # に挙動が変わったため、この placeholder トークンで publish が 403 になる（OIDC が発火しない）。
-      # userconfig .npmrc を registry 指定のみで上書きし _authToken 行を完全に排除、さらに
-      # NODE_AUTH_TOKEN を unset して OIDC trusted publishing を確実に発火させる。
+      # setup-node は registry-url 指定時に userconfig .npmrc へ
+      # `//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}`（placeholder 値）を書き込む。この
+      # トークン行が残ると npm が OIDC を試みずトークン認証にフォールバックし得るため、userconfig を
+      # registry 指定のみで上書きし、NODE_AUTH_TOKEN も unset して OIDC を確実に発火させる。
+      # （OIDC 交換の成功は `POST /-/npm/v1/oidc/token/exchange/...` が 201 になることで確認済み。）
       - name: Publish to npm (OIDC trusted publishing)
         run: |
           printf 'registry=https://registry.npmjs.org/\n' > "$NPM_CONFIG_USERCONFIG"
